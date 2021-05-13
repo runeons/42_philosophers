@@ -8,10 +8,10 @@
 ** Returns the timestamp in milliseconds
 */
 
-long    get_time(void)
+int    get_time(void)
 {
     struct timeval  tp;
-    long            milliseconds;
+    int            milliseconds;
 
     gettimeofday(&tp, NULL);
     milliseconds = tp.tv_sec * 1000;
@@ -23,9 +23,9 @@ long    get_time(void)
 ** Prints time, sleeps 200ms, repeats!
 */
 
-void	millisleep(long to_sleep, long last_time, long start_time)
+void	millisleep(int to_sleep, int last_time, int start_time)
 {
-	long	time_left;
+	int	time_left;
 
 	time_left = last_time + to_sleep - (get_time() - start_time);
 	while (time_left > 0)
@@ -38,15 +38,15 @@ void	millisleep(long to_sleep, long last_time, long start_time)
 
 int main(void)
 {
-    long start_time;
-    long last_time;
+    int start_time;
+    int last_time;
 
 		// Remember when we started
     start_time = get_time();
     while (1)
     {
 				// Print time from start, in ms
-        printf(""C_RED"%15ld"C_RES"\n", last_time = (get_time() - start_time));
+        printf(""C_RED"%15d"C_RES"\n", last_time = (get_time() - start_time));
 
 				// Sleep 200 times 1000 microseconds (1 millisecond)
         // usleep(200 * 1000);

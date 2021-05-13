@@ -87,28 +87,28 @@ int		print_error(char *msg, t_phil *phil)
 void	print(t_phil *phil, int option)
 {
 	if (option == THINKING)
-		printf("|| %3i%-*s || %-*s || %-*s || %-*s || %-*s ||\n", phil->id, 13,
+		printf("|| %7i ms || %3i%-*s || %-*s || %-*s || %-*s || %-*s ||\n", 4000, phil->id, 13,
 		" is thinking", 21, "", 13, "", 16, "", 8, "");
 	if (option == TAKEN_A_FORK)
-		printf("|| %-16s || %3i%-18s || %-13s || %-16s || %-8s ||\n", "",
+		printf("|| %7i ms || %-16s || %3i%-18s || %-13s || %-16s || %-8s ||\n", 4000, "",
 		phil->id, " has taken a fork", "", "", "");
 	if (option == EATING)
-		printf("|| %-16s || %-21s || %3i%-10s || %-16s || %-8s ||\n",
+		printf("|| %7i ms || %-16s || %-21s || %3i%-10s || %-16s || %-8s ||\n", 4000,
 		"", "", phil->id, " is eating","","");
 	if (option == SLEEPING)
-		printf("|| %-16s || %-21s || %-13s || %3i%-13s || %-8s ||\n",
+		printf("|| %7i ms || %-16s || %-21s || %-13s || %3i%-13s || %-8s ||\n", 4000,
 		"", "", "", phil->id, " is sleeping", "");
 	if (option == DIED)
-		printf("|| %-16s || %-21s || %-13s || %-16s || %3i%-5s ||\n",
+		printf("|| %7i ms || %-16s || %-21s || %-13s || %-16s || %3i%-5s ||\n", 4000,
 		"", "", "", "", phil->id, " died");
 }
 
 /*
-printf("|| %3i%-13s || %3i%-18s || %3i%-10s || %3i%-13s || %3i%-5s ||\n",
+printf("|| %7ims || %3i%-13s || %3i%-18s || %3i%-10s || %3i%-13s || %3i%-5s ||\n",
 	phil->id, " is thinking", phil->id, " has taken a fork", phil->id,
 	" is eating", phil->id, " is sleeping", phil->id, " died");
 
-	printf("|| %-16s || %-21s || %-13s || %-16s || %-8s ||\n",
+	printf("|| %7ims || %-16s || %-21s || %-13s || %-16s || %-8s ||\n",
 		"", "", "", "", "");
 
 */
@@ -185,17 +185,41 @@ void	*routine(void *phil)
 	return (phil);
 }
 
+int    get_time(void)
+{
+    struct timeval  tp;
+    int            milliseconds;
 
-int	gettimeofday(struct timeval *restrict tp, void *restrict tzp);
+    gettimeofday(&tp, NULL);
+    milliseconds = tp.tv_sec * 1000;
+    milliseconds += tp.tv_usec / 1000;
+    return (milliseconds);
+}
+
+void	millisleep(int to_sleep, int last_time, int start_time)
+{
+	int	time_left;
+
+	time_left = last_time + to_sleep - (get_time() - start_time);
+	while (time_left > 0)
+	{
+		time_left = last_time + to_sleep - (get_time() - start_time);
+		usleep(1 * 1000);
+		time_left = last_time + to_sleep - (get_time() - start_time);
+	}
+}
 
 int		start_diner(t_shared *shared)
 {
 	pthread_t	th_phil[NB_PHIL];
 	void		*phil;
 	int			i;
+	int			start_time;
 
-	printf("time : %i\n", gettimeofday());
-	printf("  ==================  =======================  ===============  ==================  ==========  \n");
+	start_time = get_time();
+	printf("start_time : %i\n", get_time());
+	printf("time : %i\n", get_time() - start_time);
+	printf("  ============  ==================  =======================  ===============  ==================  ==========  \n");
 	i = -1;
 	while (++i < NB_PHIL)
 	{
@@ -211,7 +235,7 @@ int		start_diner(t_shared *shared)
 		if (pthread_join(th_phil[i], phil) != 0)
 			return (print_error("Failed to join thread", NULL));
 	}
-	printf("  ==================  =======================  ===============  ==================  ==========  \n");
+	printf("  ============  ==================  =======================  ===============  ==================  ==========  \n");
 	return (0);
 }
 
