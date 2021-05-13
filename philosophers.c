@@ -380,10 +380,54 @@ int		fork_mutexes(int option, t_shared *shared)
 	return (0);
 }
 
+long	ft_atoi_long(char const *s)
+{
+	int		i;
+	int		n;
+	long	res;
+
+	i = 0;
+	res = 0;
+	n = 1;
+	while ((s[i] >= 9 && s[i] <= 13) || s[i] == 32)
+		i++;
+	if (s[i] == '+' || s[i] == '-')
+	{
+		if (s[i] == '-')
+			n = n * -1;
+		i++;
+	}
+	while (s[i] >= 48 && s[i] <= 57)
+	{
+		res = res * 10 + (s[i] - 48);
+		i++;
+	}
+	return (res * n);
+}
+
+int		check_av(char **av)
+{
+	int	i;
+
+	i = 0;
+	while (av[++i])
+	{
+		if (ft_atoi_long(av[i]) > 0)
+			continue ;
+		else if (ft_atoi_long(av[i]) <= 0)
+			return (-1);
+	}
+	return (0);
+}
+
 int		main(int ac, char **av)
 {
 	t_shared	shared;
 
+	// if (ac < 5 || ac > 6)
+	// 	return (-1);
+	// if (check_av(av) == -1)
+	// 	return (-1);
 	(void)ac;
 	(void)av;
 	init_shared(&shared);
