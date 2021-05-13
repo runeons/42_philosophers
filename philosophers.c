@@ -7,11 +7,10 @@
 #include <libftprintf.h>
 #include "color_shell.h"
 
-# define NB_FORK 5
-# define NB_PHIL 5
-# define TIME_TO_EAT 200
-# define TIME_TO_SLEEP 300
-# define TIME_TO_DIE 400
+# define NB_PHIL 7
+# define TIME_TO_EAT 410
+# define TIME_TO_SLEEP 200
+# define TIME_TO_DIE 200
 
 # define THINKING 0
 # define TAKEN_A_FORK 1
@@ -38,16 +37,19 @@ typedef struct		s_phil
 	int				right;
 	pthread_mutex_t	*fork_left;
 	pthread_mutex_t	*fork_right;
+	int				starting_time;
+	int				current_time;
 }					t_phil;
 
 typedef struct		s_shared
 {
-	pthread_mutex_t	forks[NB_FORK];
+	pthread_mutex_t	forks[NB_PHIL];
 	t_phil			phil[NB_PHIL];
 	int				nb_phil;
 	int				time_to_eat;
 	int				time_to_sleep;
 	int				time_to_die;
+	int				starting_time;
 }					t_shared;
 
 void	init_phil(t_shared *shared, t_phil *phil, int id)
@@ -64,6 +66,19 @@ void	init_phil(t_shared *shared, t_phil *phil, int id)
 	phil->right = phil->id;
 	phil->fork_left = &shared->forks[phil->left];
 	phil->fork_right = &shared->forks[phil->id];
+	phil->starting_time = shared->starting_time;
+	phil->current_time = 0;
+}
+
+int    get_time(void)
+{
+    struct timeval  tp;
+    int            milliseconds;
+
+    gettimeofday(&tp, NULL);
+    milliseconds = tp.tv_sec * 1000;
+    milliseconds += tp.tv_usec / 1000;
+    return (milliseconds);
 }
 
 void	init_shared(t_shared *shared)
@@ -73,6 +88,7 @@ void	init_shared(t_shared *shared)
 	shared->time_to_eat = TIME_TO_EAT;
 	shared->time_to_sleep = TIME_TO_SLEEP;
 	shared->time_to_die = TIME_TO_DIE;
+	shared->starting_time = get_time();
 }
 
 int		print_error(char *msg, t_phil *phil)
@@ -84,22 +100,40 @@ int		print_error(char *msg, t_phil *phil)
 	return (-1);
 }
 
+void	millisleep(int to_spend, int current_time, int starting_time)
+{
+	int	time_left;
+
+	time_left = current_time + to_spend - (get_time() - starting_time);
+	while (time_left > 0)
+	{
+		time_left = current_time + to_spend - (get_time() - starting_time);
+		usleep(1 * 1000);
+		time_left = current_time + to_spend - (get_time() - starting_time);
+	}
+}
+
+int		ret_current_time(t_phil phil)
+{
+	return (get_time() - phil.starting_time);
+}
+
 void	print(t_phil *phil, int option)
 {
 	if (option == THINKING)
-		printf("|| %7i ms || %3i%-*s || %-*s || %-*s || %-*s || %-*s ||\n", 4000, phil->id, 13,
+		printf("|| %7i ms || %7i ms || %3i%-*s || %-*s || %-*s || %-*s || %-*s ||\n", phil->current_time , ret_current_time(*phil), phil->id, 13,
 		" is thinking", 21, "", 13, "", 16, "", 8, "");
 	if (option == TAKEN_A_FORK)
-		printf("|| %7i ms || %-16s || %3i%-18s || %-13s || %-16s || %-8s ||\n", 4000, "",
+		printf("|| %7i ms || %7i ms || %-16s || %3i%-18s || %-13s || %-16s || %-8s ||\n", phil->current_time , ret_current_time(*phil), "",
 		phil->id, " has taken a fork", "", "", "");
 	if (option == EATING)
-		printf("|| %7i ms || %-16s || %-21s || %3i%-10s || %-16s || %-8s ||\n", 4000,
+		printf("|| %7i ms || %7i ms || %-16s || %-21s || %3i%-10s || %-16s || %-8s ||\n", phil->current_time , ret_current_time(*phil),
 		"", "", phil->id, " is eating","","");
 	if (option == SLEEPING)
-		printf("|| %7i ms || %-16s || %-21s || %-13s || %3i%-13s || %-8s ||\n", 4000,
+		printf("|| %7i ms || %7i ms || %-16s || %-21s || %-13s || %3i%-13s || %-8s ||\n", phil->current_time , ret_current_time(*phil),
 		"", "", "", phil->id, " is sleeping", "");
 	if (option == DIED)
-		printf("|| %7i ms || %-16s || %-21s || %-13s || %-16s || %3i%-5s ||\n", 4000,
+		printf("|| %7i ms || %7i ms || %-16s || %-21s || %-13s || %-16s || %3i%-5s ||\n", phil->current_time , ret_current_time(*phil),
 		"", "", "", "", phil->id, " died");
 }
 
@@ -169,44 +203,28 @@ void	*routine(void *phil)
 	change_state_and_print(curr, THINKING);
 
 	pthread_mutex_lock(curr->fork_left);
+	curr->current_time = ret_current_time(*curr);
 	print(curr, TAKEN_A_FORK);
 
 	pthread_mutex_lock(curr->fork_right);
+	curr->current_time = ret_current_time(*curr);
 	print(curr, TAKEN_A_FORK);
 
+	curr->current_time = ret_current_time(*curr);
 	change_state_and_print(curr, EATING);
-	usleep(TIME_TO_EAT * 1000);
+	// usleep(TIME_TO_EAT * 1000);
+	millisleep(TIME_TO_EAT, curr->current_time, curr->starting_time);
+	// millisleep(TIME_TO_EAT, ret_current_time(*curr), curr->starting_time);
 	curr->eating_times++;
 	pthread_mutex_unlock(curr->fork_left);
 	pthread_mutex_unlock(curr->fork_right);
 
+	curr->current_time = ret_current_time(*curr);
 	change_state_and_print(curr, SLEEPING);
-	usleep(TIME_TO_SLEEP * 1000);
+	// usleep(TIME_TO_SLEEP * 1000);
+	millisleep(TIME_TO_SLEEP, curr->current_time, curr->starting_time);
+	// millisleep(TIME_TO_SLEEP, ret_current_time(*curr), curr->starting_time);
 	return (phil);
-}
-
-int    get_time(void)
-{
-    struct timeval  tp;
-    int            milliseconds;
-
-    gettimeofday(&tp, NULL);
-    milliseconds = tp.tv_sec * 1000;
-    milliseconds += tp.tv_usec / 1000;
-    return (milliseconds);
-}
-
-void	millisleep(int to_sleep, int last_time, int start_time)
-{
-	int	time_left;
-
-	time_left = last_time + to_sleep - (get_time() - start_time);
-	while (time_left > 0)
-	{
-		time_left = last_time + to_sleep - (get_time() - start_time);
-		usleep(1 * 1000);
-		time_left = last_time + to_sleep - (get_time() - start_time);
-	}
 }
 
 int		start_diner(t_shared *shared)
@@ -214,12 +232,8 @@ int		start_diner(t_shared *shared)
 	pthread_t	th_phil[NB_PHIL];
 	void		*phil;
 	int			i;
-	int			start_time;
 
-	start_time = get_time();
-	printf("start_time : %i\n", get_time());
-	printf("time : %i\n", get_time() - start_time);
-	printf("  ============  ==================  =======================  ===============  ==================  ==========  \n");
+	printf("  ============  ============  ==================  =======================  ===============  ==================  ==========  \n");
 	i = -1;
 	while (++i < NB_PHIL)
 	{
@@ -235,7 +249,7 @@ int		start_diner(t_shared *shared)
 		if (pthread_join(th_phil[i], phil) != 0)
 			return (print_error("Failed to join thread", NULL));
 	}
-	printf("  ============  ==================  =======================  ===============  ==================  ==========  \n");
+	printf("  ============  ============  ==================  =======================  ===============  ==================  ==========  \n");
 	return (0);
 }
 
@@ -244,7 +258,7 @@ int		fork_mutexes(int option, t_shared *shared)
 	int	i;
 
 	i = -1;
-	while (++i < NB_FORK)
+	while (++i < NB_PHIL)
 	{
 		if (option == INIT)
 			pthread_mutex_init(&shared->forks[i], NULL);
