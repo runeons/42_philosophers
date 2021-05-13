@@ -13,6 +13,7 @@
 # define THINKING 0
 # define EATING 1
 # define SLEEPING 2
+# define DYING 3
 # define INIT 0
 # define DESTROY 1
 
@@ -78,23 +79,36 @@ int		print_error(char *msg, t_phil *phil)
 	return (-1);
 }
 
+/*
+printf("|| %3i%-13s || %3i%-18s || %3i%-10s || %3i%-13s || %3i%-5s ||\n",
+	phil->id, " is thinking", phil->id, " has taken a fork", phil->id,
+	" is eating", phil->id, " is sleeping", phil->id, " died");
+
+	printf("|| %-16s || %-21s || %-13s || %-16s || %-8s ||\n",
+		"", "", "", "", "");
+
+*/
+
 int		change_state_and_print(t_phil *phil, int new_state)
 {
 	if (new_state == THINKING)
 	{
+		phil->is_thinking = 1;
 		if (phil->is_eating == 1)
 			return (print_error("was not supposed to eat", phil));
 		phil->is_sleeping = 0;
-		phil->is_thinking = 1;
-		printf(""C_YELLOW"%i is thinking"C_RES"\n", phil->id);
+		printf("|| %3i%-13s || %-21s || %-13s || %-16s || %-8s ||\n",
+			phil->id, " is thinking", "", "", "", "");
 	}
 	else if (new_state == EATING)
 	{
-		if (phil->is_sleeping == 1)
-			return (print_error("was not supposed to sleep", phil));
 		phil->is_thinking = 0;
 		phil->is_eating = 1;
-		printf(""C_GREEN"%i is eating"C_RES"\n", phil->id);
+		if (phil->is_sleeping == 1)
+			return (print_error("was not supposed to sleep", phil));
+		printf("|| %-16s || %-21s || %3i%-10s || %-16s || %-8s ||\n",
+			"", "", phil->id,
+			" is eating","","");
 	}
 	else if (new_state == SLEEPING)
 	{
@@ -102,7 +116,17 @@ int		change_state_and_print(t_phil *phil, int new_state)
 			return (print_error("was not supposed to think", phil));
 		phil->is_eating = 0;
 		phil->is_sleeping = 0;
-		printf(""C_CYAN"%i is sleeping"C_RES"\n", phil->id);
+		printf("|| %-16s || %-21s || %-13s || %3i%-13s || %-8s ||\n",
+			"", "", "", phil->id, " is sleeping", "");
+	}
+	else if (new_state == DYING)
+	{
+		phil->is_thinking = 0;
+		phil->is_eating = 0;
+		phil->is_sleeping = 0;
+		phil->died = 0;
+		printf("|| %-16s || %-21s || %-13s || %-16s || %3i%-5s ||\n",
+		"", "", "", "", phil->id, " died");
 	}
 	else
 		return (print_error("undefined new_state", phil));
@@ -128,20 +152,24 @@ void	*routine(void *phil)
 	curr = ((t_phil *)phil);
 	change_state_and_print(curr, THINKING);
 	pthread_mutex_lock(curr->fork_left);
+	printf("|| %-16s || %3i%-18s || %-13s || %-16s || %-8s ||\n", "",
+		curr->id, " has taken a fork", "", "", "");
 	pthread_mutex_lock(curr->fork_right);
+	printf("|| %-16s || %3i%-18s || %-13s || %-16s || %-8s ||\n", "",
+		curr->id, " has taken a fork", "", "", "");
 	// pthread_mutex_lock(&forks[curr->left]);
 	// pthread_mutex_lock(&forks[curr->right]);
 
 	change_state_and_print(curr, EATING);
 	usleep(TIME_TO_EAT);
 	curr->eating_times++;
-	printf(""C_BLUE"%i has eaten"C_RES"\n", curr->id);
+	// printf(""C_BLUE"%3i has eaten"C_RES"\n", curr->id);
 	pthread_mutex_unlock(curr->fork_left);
 	pthread_mutex_unlock(curr->fork_right);
 
 	change_state_and_print(curr, SLEEPING);
 	usleep(TIME_TO_SLEEP);
-	printf(""C_BLUE"%i has slept"C_RES"\n", curr->id);
+	// printf(""C_BLUE"%3i has slept"C_RES"\n", curr->id);
 	return (phil);
 }
 
@@ -151,6 +179,7 @@ int		start_diner(t_shared *shared)
 	void		*phil;
 	int			i;
 
+	printf("  ==================  =======================  ===============  ==================  ==========  \n");
 	i = -1;
 	while (++i < NB_PHIL)
 	{
@@ -166,6 +195,7 @@ int		start_diner(t_shared *shared)
 		if (pthread_join(th_phil[i], phil) != 0)
 			return (print_error("Failed to join thread", NULL));
 	}
+	printf("  ==================  =======================  ===============  ==================  ==========  \n");
 	return (0);
 }
 
