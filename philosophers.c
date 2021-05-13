@@ -46,6 +46,7 @@ gcc -Wall -Wextra -Werror philosophers.c && ~/valgrind_fork/bin/valgrind ./a.out
 */
 
 int	g_end = 0;
+pthread_mutex_t mutex;
 
 typedef struct		s_phil
 {
@@ -150,11 +151,15 @@ int		ret_current_time(t_phil phil)
 
 void	print(t_phil *phil, int option)
 {
-	if (option == DIED)
+	if (option == DIED && g_end == 0)
+	{
+		g_end = 1;
 		printf("|| %7i ms || %7i ms || %-16s || %-21s || %-13s || %-16s || %3i%-5s ||\n", phil->current_time , ret_current_time(*phil),
 		"", "", "", "", phil->id, " died");
-	// else if (g_end)
-	// 	return ;
+		millisleep(100, phil->current_time, phil->starting_time);
+	}
+	else if (g_end)
+		return ;
 	else if (option == THINKING)
 		printf("|| %7i ms || %7i ms || %3i%-*s || %-*s || %-*s || %-*s || %-*s ||\n", phil->current_time , ret_current_time(*phil), phil->id, 13,
 		" is thinking", 21, "", 13, "", 16, "", 8, "");
@@ -167,6 +172,27 @@ void	print(t_phil *phil, int option)
 	else if (option == SLEEPING)
 		printf("|| %7i ms || %7i ms || %-16s || %-21s || %-13s || %3i%-13s || %-8s ||\n", phil->current_time , ret_current_time(*phil),
 		"", "", "", phil->id, " is sleeping", "");
+}
+
+void	print_rendu(t_phil *phil, int option)
+{
+	if (option == DIED && g_end == 0)
+	{
+		g_end = 1;
+		printf("%8i %3i %s\n", phil->current_time, phil->id, " died");
+		millisleep(100, phil->current_time, phil->starting_time);
+	}
+	else if (g_end)
+		return ;
+	else if (option == THINKING)
+		printf("%8i %3i %s\n", phil->current_time, phil->id, " is thinking");
+	else if (option == TAKEN_A_FORK)
+		printf("%8i %3i %s\n", phil->current_time, phil->id, " has taken a fork");
+	else if (option == EATING)
+		printf("%8i %3i %s\n", phil->current_time, phil->id, " is eating");
+	else if (option == SLEEPING)
+		printf("%8i %3i %s\n", phil->current_time, phil->id, " is sleeping");
+
 }
 
 int		change_state_and_print(t_phil **phil, int new_state)
@@ -196,7 +222,7 @@ int		change_state_and_print(t_phil **phil, int new_state)
 	}
 	else if (new_state == DIED)
 	{
-		g_end = 1;
+		// g_end = 1;
 		(*phil)->is_thinking = 0;
 		(*phil)->is_eating = 0;
 		(*phil)->is_sleeping = 0;
@@ -207,11 +233,11 @@ int		change_state_and_print(t_phil **phil, int new_state)
 	else
 		return (print_error("undefined new_state", (*phil)));
 	// pthread_mutex_lock((*phil)->lock_print);
-	print((*phil), new_state);
-	// if (g_end)
-	// 	return (0);
+	pthread_mutex_lock(&mutex);
+	// print((*phil), new_state);
+	print_rendu((*phil), new_state);
+	pthread_mutex_unlock(&mutex);
 	// pthread_mutex_unlock((*phil)->lock_print);
-
 	return (0);
 }
 
@@ -227,17 +253,19 @@ pthread_mutex_unlock(&fork)
 	<=> lock == 1
 */
 
+/*
+** return -1 if philosopher died
+*/
+
 int		take_fork(t_phil **phil, int option)
 {
 	if (ret_current_time(**phil) - (*phil)->last_eating > TIME_TO_DIE)
 	{
 		change_state_and_print(phil, DIED);
-		// print((*phil), DIED);
 		if (option == LEFT)
 			pthread_mutex_unlock((*phil)->fork_left);
 		else if (option == RIGHT)
 			pthread_mutex_unlock((*phil)->fork_right);
-		printf("TAKE_FORKS -1\n");
 		return (-1);
 	}
 	else if (option == LEFT)
@@ -247,8 +275,10 @@ int		take_fork(t_phil **phil, int option)
 	else
 		print_error("invalid fork option", *phil);
 	change_state_and_print(phil, TAKEN_A_FORK);
+
 	return (0);
 }
+
 int		take_forks(t_phil **phil, int nb_phil, int id)
 {
 	if (nb_phil % 2)
@@ -286,11 +316,9 @@ void	*routine(void *phil)
 	while (1)
 	{
 		change_state_and_print(&curr, THINKING);
+
 		if (take_forks(&curr, curr->nb_phil, curr->id) == -1)
-		{
-			printf("ERROR\n");
-			return (NULL);
-		}
+			return (phil);
 
 		change_state_and_print(&curr, EATING);
 		millisleep(TIME_TO_EAT, curr->current_time, curr->starting_time);
@@ -360,11 +388,13 @@ int		main(int ac, char **av)
 	(void)av;
 	init_shared(&shared);
 	pthread_mutex_init(&shared.lock_print, NULL);
+	pthread_mutex_init(&mutex, NULL);
 	if (fork_mutexes(INIT, &shared))
 		return (-1);
 	if (start_diner(&shared))
 		return (-1);
 	pthread_mutex_destroy(&shared.lock_print);
+	pthread_mutex_destroy(&mutex);
 	if (fork_mutexes(DESTROY, &shared))
 		return (-1);
 	return (0);
