@@ -2,18 +2,23 @@
 #include <stdio.h>
 #include <pthread.h>
 #include <time.h>
+#include <sys/time.h>
 #include <unistd.h>
+#include <libftprintf.h>
 #include "color_shell.h"
 
 # define NB_FORK 5
 # define NB_PHIL 5
-# define TIME_TO_EAT 200000
-# define TIME_TO_SLEEP 300000
-# define TIME_TO_DIE 400000
+# define TIME_TO_EAT 200
+# define TIME_TO_SLEEP 300
+# define TIME_TO_DIE 400
+
 # define THINKING 0
-# define EATING 1
-# define SLEEPING 2
-# define DYING 3
+# define TAKEN_A_FORK 1
+# define EATING 2
+# define SLEEPING 3
+# define DIED 4
+
 # define INIT 0
 # define DESTROY 1
 
@@ -73,10 +78,29 @@ void	init_shared(t_shared *shared)
 int		print_error(char *msg, t_phil *phil)
 {
 	if (phil)
-		dprintf(2, C_G_RED"%d %s"C_RES"\n", phil->id, msg);
+		ft_dprintf(2, C_G_RED"%d %s"C_RES"\n", phil->id, msg);
 	else
-		dprintf(2, C_G_RED"%s"C_RES"\n", msg);
+		ft_dprintf(2, C_G_RED"%s"C_RES"\n", msg);
 	return (-1);
+}
+
+void	print(t_phil *phil, int option)
+{
+	if (option == THINKING)
+		printf("|| %3i%-*s || %-*s || %-*s || %-*s || %-*s ||\n", phil->id, 13,
+		" is thinking", 21, "", 13, "", 16, "", 8, "");
+	if (option == TAKEN_A_FORK)
+		printf("|| %-16s || %3i%-18s || %-13s || %-16s || %-8s ||\n", "",
+		phil->id, " has taken a fork", "", "", "");
+	if (option == EATING)
+		printf("|| %-16s || %-21s || %3i%-10s || %-16s || %-8s ||\n",
+		"", "", phil->id, " is eating","","");
+	if (option == SLEEPING)
+		printf("|| %-16s || %-21s || %-13s || %3i%-13s || %-8s ||\n",
+		"", "", "", phil->id, " is sleeping", "");
+	if (option == DIED)
+		printf("|| %-16s || %-21s || %-13s || %-16s || %3i%-5s ||\n",
+		"", "", "", "", phil->id, " died");
 }
 
 /*
@@ -97,8 +121,6 @@ int		change_state_and_print(t_phil *phil, int new_state)
 		if (phil->is_eating == 1)
 			return (print_error("was not supposed to eat", phil));
 		phil->is_sleeping = 0;
-		printf("|| %3i%-13s || %-21s || %-13s || %-16s || %-8s ||\n",
-			phil->id, " is thinking", "", "", "", "");
 	}
 	else if (new_state == EATING)
 	{
@@ -106,9 +128,6 @@ int		change_state_and_print(t_phil *phil, int new_state)
 		phil->is_eating = 1;
 		if (phil->is_sleeping == 1)
 			return (print_error("was not supposed to sleep", phil));
-		printf("|| %-16s || %-21s || %3i%-10s || %-16s || %-8s ||\n",
-			"", "", phil->id,
-			" is eating","","");
 	}
 	else if (new_state == SLEEPING)
 	{
@@ -116,20 +135,17 @@ int		change_state_and_print(t_phil *phil, int new_state)
 			return (print_error("was not supposed to think", phil));
 		phil->is_eating = 0;
 		phil->is_sleeping = 0;
-		printf("|| %-16s || %-21s || %-13s || %3i%-13s || %-8s ||\n",
-			"", "", "", phil->id, " is sleeping", "");
 	}
-	else if (new_state == DYING)
+	else if (new_state == DIED)
 	{
 		phil->is_thinking = 0;
 		phil->is_eating = 0;
 		phil->is_sleeping = 0;
-		phil->died = 0;
-		printf("|| %-16s || %-21s || %-13s || %-16s || %3i%-5s ||\n",
-		"", "", "", "", phil->id, " died");
+		phil->died = 1;
 	}
 	else
 		return (print_error("undefined new_state", phil));
+	print(phil, new_state);
 	return (0);
 }
 
@@ -151,27 +167,26 @@ void	*routine(void *phil)
 
 	curr = ((t_phil *)phil);
 	change_state_and_print(curr, THINKING);
+
 	pthread_mutex_lock(curr->fork_left);
-	printf("|| %-16s || %3i%-18s || %-13s || %-16s || %-8s ||\n", "",
-		curr->id, " has taken a fork", "", "", "");
+	print(curr, TAKEN_A_FORK);
+
 	pthread_mutex_lock(curr->fork_right);
-	printf("|| %-16s || %3i%-18s || %-13s || %-16s || %-8s ||\n", "",
-		curr->id, " has taken a fork", "", "", "");
-	// pthread_mutex_lock(&forks[curr->left]);
-	// pthread_mutex_lock(&forks[curr->right]);
+	print(curr, TAKEN_A_FORK);
 
 	change_state_and_print(curr, EATING);
-	usleep(TIME_TO_EAT);
+	usleep(TIME_TO_EAT * 1000);
 	curr->eating_times++;
-	// printf(""C_BLUE"%3i has eaten"C_RES"\n", curr->id);
 	pthread_mutex_unlock(curr->fork_left);
 	pthread_mutex_unlock(curr->fork_right);
 
 	change_state_and_print(curr, SLEEPING);
-	usleep(TIME_TO_SLEEP);
-	// printf(""C_BLUE"%3i has slept"C_RES"\n", curr->id);
+	usleep(TIME_TO_SLEEP * 1000);
 	return (phil);
 }
+
+
+int	gettimeofday(struct timeval *restrict tp, void *restrict tzp);
 
 int		start_diner(t_shared *shared)
 {
@@ -179,6 +194,7 @@ int		start_diner(t_shared *shared)
 	void		*phil;
 	int			i;
 
+	printf("time : %i\n", gettimeofday());
 	printf("  ==================  =======================  ===============  ==================  ==========  \n");
 	i = -1;
 	while (++i < NB_PHIL)
