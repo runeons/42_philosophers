@@ -90,12 +90,15 @@ int		print_error(char *msg, t_phil *phil);
 void	print_rendu(t_phil *phil, int option);
 int		change_state_and_print(t_phil **phil, int new_state);
 
-int    get_time(void);
+int		get_time(void);
 void	millisleep(int to_spend, int current_time, int starting_time);
 int		ret_current_time(t_phil phil);
 
 int		take_fork(t_phil **phil, int option);
 int		take_forks(t_phil **phil, int nb_phil, int id);
 int		fork_mutexes(int option, t_shared *shared);
+
+void	*routine(void *phil);
+int		start_diner(t_shared *shared);
 
 #endif
