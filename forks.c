@@ -2,7 +2,7 @@
 
 int		take_fork(t_phil **phil, int option)
 {
-	if (ret_current_time(**phil) - (*phil)->last_eating > TIME_TO_DIE)
+	if (ret_current_time(**phil) - (*phil)->last_eating > (*phil)->time_to_die)
 	{
 		change_state_and_print(phil, DIED);
 		if (option == LEFT)

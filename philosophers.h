@@ -10,33 +10,16 @@
 # include "color_shell.h"
 
 extern int	g_end;
-pthread_mutex_t mutex;
+pthread_mutex_t lock_print;
 
 // none dies
-// # define NB_PHIL 4
-// # define TIME_TO_DIE 410
-// # define TIME_TO_EAT 200
-// # define TIME_TO_SLEEP 200
+// 4 410 200 200
+// 5 800 200 200
 
-// // one dies
-# define NB_PHIL 4
-# define TIME_TO_DIE 310
-# define TIME_TO_EAT 200
-# define TIME_TO_SLEEP 100
-//
-// none dies
-// # define NB_PHIL 5
-// # define TIME_TO_DIE 800
-// # define TIME_TO_EAT 200
-// # define TIME_TO_SLEEP 200
-//
 // one dies
-// # define NB_PHIL 5
-// # define TIME_TO_DIE 310
-// # define TIME_TO_EAT 200
-// # define TIME_TO_SLEEP 200
-// # define EATING_TIMES 4
-//
+// 4 310 200 100
+// 5 310 200 200 4
+
 # define THINKING 0
 # define TAKEN_A_FORK 1
 # define EATING 2

@@ -2,22 +2,6 @@
 
 int g_end = 0;
 
-/*
-pthread_mutex_lock(&fork)
-	<=> if (lock == 1)
-	{
-		// wait until lock == 0
-	}
-	lock = 1;
-do whatever
-pthread_mutex_unlock(&fork)
-	<=> lock == 1
-*/
-
-/*
-** return -1 if philosopher died
-*/
-
 int		check_input(int ac, char **av)
 {
 	int	i;
@@ -41,11 +25,20 @@ int		check_input(int ac, char **av)
 	return (0);
 }
 
+void	init_phils(int starting_time, t_phil *phil, char**av, pthread_mutex_t *forks)
+{
+	int i;
+	i = -1;
+	while (++i < ft_atoi_long(av[1]))
+		init_phil(starting_time, &phil[i], i, av, &forks);
+	return ;
+}
+
 int		main(int ac, char **av)
 {
-	t_phil		*phil;
-	int			starting_time;
-	int 		nb_phil;
+	t_phil			*phil;
+	int				starting_time;
+	int 			nb_phil;
 	pthread_mutex_t	*forks;
 
 	if (check_input(ac, av) == -1)
@@ -53,20 +46,18 @@ int		main(int ac, char **av)
 	nb_phil = ft_atoi_long(av[1]);
 	phil = (t_phil *)malloc(sizeof(t_phil) * (nb_phil + 1));
 	forks = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t) * (nb_phil + 1));
-	int i;
-	i = -1;
 	starting_time = get_time();
-	pthread_mutex_init(&mutex, NULL);
+	pthread_mutex_init(&lock_print, NULL);
+	// while (++i < nb_phil)
+		// init_phil(starting_time, &phil[i], i, av, &forks);
+	init_phils(starting_time, phil, av, forks);
 	if (fork_mutexes(INIT, forks, nb_phil))
 		return (-1);
-	while (++i < nb_phil)
-		init_phil(starting_time, &phil[i], i, av, &forks);
 	if (start_diner(phil, nb_phil))
 		return (-1);
-	pthread_mutex_destroy(&mutex);
+	pthread_mutex_destroy(&lock_print);
 	if (fork_mutexes(DESTROY, forks, nb_phil))
 		return (-1);
-	i = -1;
 	free(phil);
 	free(forks);
 	return (0);

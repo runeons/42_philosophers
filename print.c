@@ -57,7 +57,6 @@ int		change_state_and_print(t_phil **phil, int new_state)
 	}
 	else if (new_state == DIED)
 	{
-		// g_end = 1;
 		(*phil)->is_thinking = 0;
 		(*phil)->is_eating = 0;
 		(*phil)->is_sleeping = 0;
@@ -67,8 +66,8 @@ int		change_state_and_print(t_phil **phil, int new_state)
 		;
 	else
 		return (print_error("undefined new_state", (*phil)));
-	pthread_mutex_lock(&mutex);
+	pthread_mutex_lock(&lock_print);
 	print_rendu((*phil), new_state);
-	pthread_mutex_unlock(&mutex);
+	pthread_mutex_unlock(&lock_print);
 	return (0);
 }
