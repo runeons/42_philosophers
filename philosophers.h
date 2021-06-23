@@ -9,8 +9,8 @@
 # include <unistd.h>
 # include "color_shell.h"
 
-extern int	g_end;
-pthread_mutex_t lock_print;
+extern int		g_end;
+pthread_mutex_t	g_lock_print;
 
 // none dies
 // 4 410 200 200
@@ -32,7 +32,7 @@ pthread_mutex_t lock_print;
 # define LEFT 0
 # define RIGHT 1
 
-typedef struct		s_phil
+typedef struct s_phil
 {
 	int				nb_phil;
 	int				time_to_eat;
@@ -51,7 +51,7 @@ typedef struct		s_phil
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	*fork_left;
 	pthread_mutex_t	*fork_right;
-	int				current_time;
+	int				curr_time;
 	int				last_eating;
 	pthread_t		th_phil;
 
@@ -59,14 +59,15 @@ typedef struct		s_phil
 
 long	ft_atoi_long(char const *s);
 
-void	init_phil(int starting_time, t_phil *phil, int id, char**av, pthread_mutex_t **forks);
+void	init_phil(int starting_time, t_phil *phil, int id, char**av,
+			pthread_mutex_t **forks);
 
 int		print_error(char *msg, t_phil *phil);
 void	print_rendu(t_phil *phil, int option);
 int		change_state_and_print(t_phil **phil, int new_state);
 
 int		get_time(void);
-void	millisleep(int to_spend, int current_time, int starting_time);
+void	millisleep(int to_spend, int curr_time, int starting_time);
 int		ret_current_time(t_phil phil);
 
 int		take_fork(t_phil **phil, int option);

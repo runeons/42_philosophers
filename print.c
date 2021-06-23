@@ -1,6 +1,6 @@
 #include "philosophers.h"
 
-int		print_error(char *msg, t_phil *phil)
+int	print_error(char *msg, t_phil *phil)
 {
 	if (phil)
 		printf(C_G_RED"%d %s"C_RES"\n", phil->id, msg);
@@ -14,25 +14,24 @@ void	print_rendu(t_phil *phil, int option)
 	if (option == DIED && g_end == 0)
 	{
 		g_end = 1;
-		printf("%8i %3i %s\n", phil->current_time, phil->id, " died");
-		millisleep(100, phil->current_time, phil->starting_time);
+		printf("%8i %3i %s\n", phil->curr_time, phil->id, " died");
+		millisleep(100, phil->curr_time, phil->starting_time);
 	}
 	else if (g_end)
 		return ;
 	else if (option == THINKING)
-		printf("%8i %3i %s\n", phil->current_time, phil->id, " is thinking");
+		printf("%8i %3i %s\n", phil->curr_time, phil->id, " is thinking");
 	else if (option == TAKEN_A_FORK)
-		printf("%8i %3i %s\n", phil->current_time, phil->id, " has taken a fork");
+		printf("%8i %3i %s\n", phil->curr_time, phil->id, " has taken a fork");
 	else if (option == EATING)
-		printf("%8i %3i %s\n", phil->current_time, phil->id, " is eating");
+		printf("%8i %3i %s\n", phil->curr_time, phil->id, " is eating");
 	else if (option == SLEEPING)
-		printf("%8i %3i %s\n", phil->current_time, phil->id, " is sleeping");
-
+		printf("%8i %3i %s\n", phil->curr_time, phil->id, " is sleeping");
 }
 
-int		change_state_and_print(t_phil **phil, int new_state)
+int	change_state_and_print(t_phil **phil, int new_state)
 {
-	(*phil)->current_time = ret_current_time(**phil);
+	(*phil)->curr_time = ret_current_time(**phil);
 	if (new_state == THINKING)
 	{
 		(*phil)->is_thinking = 1;
@@ -42,7 +41,7 @@ int		change_state_and_print(t_phil **phil, int new_state)
 	}
 	else if (new_state == EATING)
 	{
-		(*phil)->last_eating = (*phil)->current_time;
+		(*phil)->last_eating = (*phil)->curr_time;
 		(*phil)->is_thinking = 0;
 		(*phil)->is_eating = 1;
 		if ((*phil)->is_sleeping == 1)
@@ -66,8 +65,8 @@ int		change_state_and_print(t_phil **phil, int new_state)
 		;
 	else
 		return (print_error("undefined new_state", (*phil)));
-	pthread_mutex_lock(&lock_print);
+	pthread_mutex_lock(&g_lock_print);
 	print_rendu((*phil), new_state);
-	pthread_mutex_unlock(&lock_print);
+	pthread_mutex_unlock(&g_lock_print);
 	return (0);
 }

@@ -21,6 +21,6 @@ void	init_phil(int starting_time, t_phil *phil, int id, char**av, pthread_mutex_
 	phil->forks = *forks;
 	phil->fork_left = &phil->forks[phil->left];
 	phil->fork_right = &phil->forks[phil->id];
-	phil->current_time = 0;
+	phil->curr_time = 0;
 	phil->last_eating = 0;
 }
