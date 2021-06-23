@@ -14,6 +14,8 @@ void	init_phil(int starting_time, t_phil *phil, int id, char**av, pthread_mutex_
 	phil->is_sleeping = 0;
 	phil->died = 0;
 	phil->eating_times = 0;
+	if (av[5] && ft_atoi_long(av[5]) > 0)
+		phil->eating_times = ft_atoi_long(av[5]);
 	phil->left = id - 1;
 	if (id == 0)
 		phil->left = phil->nb_phil - 1;
