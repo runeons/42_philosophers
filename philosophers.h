@@ -73,16 +73,9 @@ typedef struct		s_phil
 
 }					t_phil;
 
-typedef struct		s_shared
-{
-	pthread_mutex_t	forks[NB_PHIL];
-	t_phil			phil[NB_PHIL];
-}					t_shared;
-
 long	ft_atoi_long(char const *s);
 
 void	init_phil(int starting_time, t_phil *phil, int id, char**av, pthread_mutex_t **forks);
-void	init_shared(t_shared *shared);
 
 int		print_error(char *msg, t_phil *phil);
 void	print_rendu(t_phil *phil, int option);
@@ -97,6 +90,6 @@ int		take_forks(t_phil **phil, int nb_phil, int id);
 int		fork_mutexes(int option, pthread_mutex_t *forks, int nb_phil);
 
 void	*routine(void *phil);
-int		start_diner(t_shared *shared, t_phil *phils, int nb_phil);
+int		start_diner(t_phil *phils, int nb_phil);
 
 #endif

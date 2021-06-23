@@ -43,7 +43,6 @@ int		check_input(int ac, char **av)
 
 int		main(int ac, char **av)
 {
-	t_shared	shared;
 	t_phil		*phil;
 	int			starting_time;
 	int 		nb_phil;
@@ -58,14 +57,11 @@ int		main(int ac, char **av)
 	i = -1;
 	starting_time = get_time();
 	while (++i < nb_phil)
-	{
 		init_phil(starting_time, &phil[i], i, av, &forks);
-		// phil[i].forks = forks;
-	}
 	pthread_mutex_init(&mutex, NULL);
 	if (fork_mutexes(INIT, forks, nb_phil))
 		return (-1);
-	if (start_diner(&shared, phil, nb_phil))
+	if (start_diner(phil, nb_phil))
 		return (-1);
 	pthread_mutex_destroy(&mutex);
 	if (fork_mutexes(DESTROY, forks, nb_phil))

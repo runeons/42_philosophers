@@ -24,13 +24,3 @@ void	init_phil(int starting_time, t_phil *phil, int id, char**av, pthread_mutex_
 	phil->current_time = 0;
 	phil->last_eating = 0;
 }
-
-void	init_shared(t_shared *shared)
-{
-	(void)shared;
-	// shared->nb_phil = NB_PHIL;
-	// shared->time_to_eat = TIME_TO_EAT;
-	// shared->time_to_sleep = TIME_TO_SLEEP;
-	// shared->time_to_die = TIME_TO_DIE;
-	// shared->starting_time = get_time();
-}
