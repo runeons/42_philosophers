@@ -1,7 +1,7 @@
 NAME 		= 	philosophers
 
 CC 			= 	clang
-CFLAGS 		= 	-Wall -Wextra -Werror -g3
+CFLAGS 		= 	-Wall -Wextra -Werror -g3 -lpthread
 SRCS		=	main.c \
 				diner_routine.c \
 				forks.c \
