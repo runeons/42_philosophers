@@ -51,17 +51,17 @@ int		take_forks(t_phil **phil, int nb_phil, int id)
 	return (0);
 }
 
-int		fork_mutexes(int option, t_shared *shared)
+int		fork_mutexes(int option, pthread_mutex_t *forks, int nb_phil)
 {
 	int	i;
 
 	i = -1;
-	while (++i < NB_PHIL)
+	while (++i < nb_phil)
 	{
 		if (option == INIT)
-			pthread_mutex_init(&shared->forks[i], NULL);
+			pthread_mutex_init(&forks[i], NULL);
 		else if (option == DESTROY)
-			pthread_mutex_destroy(&shared->forks[i]);
+			pthread_mutex_destroy(&forks[i]);
 		else
 			return (print_error("invalid option mutexes handling", NULL));
 	}

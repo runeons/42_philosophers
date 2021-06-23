@@ -52,6 +52,10 @@ pthread_mutex_t mutex;
 typedef struct		s_phil
 {
 	int				nb_phil;
+	int				time_to_eat;
+	int				time_to_sleep;
+	int				time_to_die;
+	int				starting_time;
 	int				id;
 	int				eating_times;
 	int				is_thinking;
@@ -61,29 +65,23 @@ typedef struct		s_phil
 	int				died;
 	int				left;
 	int				right;
+	pthread_mutex_t	*forks;
 	pthread_mutex_t	*fork_left;
 	pthread_mutex_t	*fork_right;
-	pthread_mutex_t	*lock_print;
-	int				starting_time;
 	int				current_time;
 	int				last_eating;
+
 }					t_phil;
 
 typedef struct		s_shared
 {
 	pthread_mutex_t	forks[NB_PHIL];
-	pthread_mutex_t	lock_print;
 	t_phil			phil[NB_PHIL];
-	int				nb_phil;
-	int				time_to_eat;
-	int				time_to_sleep;
-	int				time_to_die;
-	int				starting_time;
 }					t_shared;
 
 long	ft_atoi_long(char const *s);
 
-void	init_phil(t_shared *shared, t_phil *phil, int id);
+void	init_phil(int starting_time, t_phil *phil, int id, char**av, pthread_mutex_t **forks);
 void	init_shared(t_shared *shared);
 
 int		print_error(char *msg, t_phil *phil);
@@ -96,9 +94,9 @@ int		ret_current_time(t_phil phil);
 
 int		take_fork(t_phil **phil, int option);
 int		take_forks(t_phil **phil, int nb_phil, int id);
-int		fork_mutexes(int option, t_shared *shared);
+int		fork_mutexes(int option, pthread_mutex_t *forks, int nb_phil);
 
 void	*routine(void *phil);
-int		start_diner(t_shared *shared);
+int		start_diner(t_shared *shared, t_phil *phils, int nb_phil);
 
 #endif

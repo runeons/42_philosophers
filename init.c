@@ -1,8 +1,12 @@
 #include "philosophers.h"
 
-void	init_phil(t_shared *shared, t_phil *phil, int id)
+void	init_phil(int starting_time, t_phil *phil, int id, char**av, pthread_mutex_t **forks)
 {
-	phil->nb_phil = shared->nb_phil;
+	phil->nb_phil = ft_atoi_long(av[1]);
+	phil->time_to_die = ft_atoi_long(av[2]);
+	phil->time_to_eat = ft_atoi_long(av[3]);
+	phil->time_to_sleep = ft_atoi_long(av[4]);
+	phil->starting_time = starting_time;
 	phil->id = id;
 	phil->is_thinking = 0;
 	phil->has_taken_a_fork = 0;
@@ -12,21 +16,21 @@ void	init_phil(t_shared *shared, t_phil *phil, int id)
 	phil->eating_times = 0;
 	phil->left = id - 1;
 	if (id == 0)
-		phil->left = NB_PHIL;
+		phil->left = phil->nb_phil;
 	phil->right = phil->id;
-	phil->fork_left = &shared->forks[phil->left];
-	phil->fork_right = &shared->forks[phil->id];
-	phil->lock_print = &shared->lock_print;
-	phil->starting_time = shared->starting_time;
+	phil->forks = *forks;
+	phil->fork_left = &phil->forks[phil->left];
+	phil->fork_right = &phil->forks[phil->id];
 	phil->current_time = 0;
 	phil->last_eating = 0;
 }
 
 void	init_shared(t_shared *shared)
 {
-	shared->nb_phil = NB_PHIL;
-	shared->time_to_eat = TIME_TO_EAT;
-	shared->time_to_sleep = TIME_TO_SLEEP;
-	shared->time_to_die = TIME_TO_DIE;
-	shared->starting_time = get_time();
+	(void)shared;
+	// shared->nb_phil = NB_PHIL;
+	// shared->time_to_eat = TIME_TO_EAT;
+	// shared->time_to_sleep = TIME_TO_SLEEP;
+	// shared->time_to_die = TIME_TO_DIE;
+	// shared->starting_time = get_time();
 }

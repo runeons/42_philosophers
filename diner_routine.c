@@ -26,24 +26,27 @@ void	*routine(void *phil)
 	return (phil);
 }
 
-int		start_diner(t_shared *shared)
+int		start_diner(t_shared *shared, t_phil *phils, int nb_phil)
 {
-	pthread_t	th_phil[NB_PHIL];
+	pthread_t	th_phil[nb_phil];
 	void		*phil;
 	int			i;
 
+	(void)shared;
 	i = -1;
-	while (++i < NB_PHIL)
+	while (++i < nb_phil)
 	{
-		init_phil(shared, &shared->phil[i], i);
-		phil = (void *)&shared->phil[i];
+		// init_phil(shared, &shared->phil[i], i);
+		// phil = (void *) &shared->phil[i];
+		phil = (void *) &phils[i];
 		if (pthread_create(&th_phil[i], NULL, &routine, phil) != 0)
 			return (print_error("Failed to create thread", NULL));
 	}
 	i = -1;
-	while (++i < NB_PHIL)
+	while (++i < nb_phil)
 	{
-		phil = (void**) &shared->phil[i];
+		phil = (void**) &phils[i];
+		// phil = (void**) &shared->phil[i];
 		if (pthread_join(th_phil[i], phil) != 0)
 			return (print_error("Failed to join thread", NULL));
 	}
