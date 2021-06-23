@@ -1,6 +1,6 @@
 #include "philosophers.h"
 
-int		take_fork(t_phil **phil, int option)
+int	take_fork(t_phil **phil, int option)
 {
 	if (ret_current_time(**phil) - (*phil)->last_eating > (*phil)->time_to_die)
 	{
@@ -18,11 +18,10 @@ int		take_fork(t_phil **phil, int option)
 	else
 		print_error("invalid fork option", *phil);
 	change_state_and_print(phil, TAKEN_A_FORK);
-
 	return (0);
 }
 
-int		take_forks(t_phil **phil, int nb_phil, int id)
+int	take_forks(t_phil **phil, int nb_phil, int id)
 {
 	if (nb_phil % 2)
 	{
@@ -51,7 +50,7 @@ int		take_forks(t_phil **phil, int nb_phil, int id)
 	return (0);
 }
 
-int		fork_mutexes(int option, pthread_mutex_t *forks, int nb_phil)
+int	fork_mutexes(int option, pthread_mutex_t *forks, int nb_phil)
 {
 	int	i;
 

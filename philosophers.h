@@ -53,6 +53,7 @@ typedef struct		s_phil
 	pthread_mutex_t	*fork_right;
 	int				current_time;
 	int				last_eating;
+	pthread_t		th_phil;
 
 }					t_phil;
 
