@@ -68,5 +68,6 @@ int		main(int ac, char **av)
 		return (-1);
 	i = -1;
 	free(phil);
+	free(forks);
 	return (0);
 }
