@@ -5,6 +5,11 @@ void	*routine(void *phil)
 	t_phil	*curr;
 
 	curr = ((t_phil *)phil);
+	if (curr->nb_phil == 1)
+	{
+		change_state_and_print(&curr, DIED);
+		return (phil);
+	}
 	while (1)
 	{
 		change_state_and_print(&curr, THINKING);
