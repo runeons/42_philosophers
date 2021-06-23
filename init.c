@@ -16,11 +16,14 @@ void	init_phil(int starting_time, t_phil *phil, int id, char**av, pthread_mutex_
 	phil->eating_times = 0;
 	phil->left = id - 1;
 	if (id == 0)
-		phil->left = phil->nb_phil;
+		phil->left = phil->nb_phil - 1;
 	phil->right = phil->id;
 	phil->forks = *forks;
+	// printf(""C_G_RED"Phil # %i\n"C_RES, phil->id);
 	phil->fork_left = &phil->forks[phil->left];
+	// printf(""C_G_YELLOW"left : %p\n"C_RES, phil->fork_left);
 	phil->fork_right = &phil->forks[phil->id];
+	// printf(""C_G_YELLOW"right : %p\n"C_RES, phil->fork_right);
 	phil->current_time = 0;
 	phil->last_eating = 0;
 }

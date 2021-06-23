@@ -56,15 +56,17 @@ int		main(int ac, char **av)
 	int i;
 	i = -1;
 	starting_time = get_time();
-	while (++i < nb_phil)
-		init_phil(starting_time, &phil[i], i, av, &forks);
 	pthread_mutex_init(&mutex, NULL);
 	if (fork_mutexes(INIT, forks, nb_phil))
 		return (-1);
+	while (++i < nb_phil)
+		init_phil(starting_time, &phil[i], i, av, &forks);
 	if (start_diner(phil, nb_phil))
 		return (-1);
 	pthread_mutex_destroy(&mutex);
 	if (fork_mutexes(DESTROY, forks, nb_phil))
 		return (-1);
+	i = -1;
+	free(phil);
 	return (0);
 }
