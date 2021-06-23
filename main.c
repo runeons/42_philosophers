@@ -9,7 +9,7 @@ int	check_input(int ac, char **av)
 	i = 0;
 	if (ac < 5 || ac > 6)
 	{
-		printf(""RED_B"Error:"WHITE_B" input - wrong number of arguments\n"C_RES);
+		printf(""R_B"Error:"W_B" input - wrong number of arguments\n"C_RES);
 		return (-1);
 	}
 	while (av[++i])
@@ -18,7 +18,8 @@ int	check_input(int ac, char **av)
 			continue ;
 		else if (ft_atoi_long(av[i]) <= 0)
 		{
-			printf(""RED_B"Error:"WHITE_B" input - all arguments should be > 0\n"C_RES);
+			printf(""R_B"Error:"W_B" input - all arguments should be > 0\n"
+				C_RES);
 			return (-1);
 		}
 	}
@@ -33,7 +34,10 @@ void	init_phils(t_phil *phil, char**av, pthread_mutex_t *forks)
 	starting_time = get_time();
 	i = -1;
 	while (++i < ft_atoi_long(av[1]))
-		init_phil(starting_time, &phil[i], i, av, &forks);
+	{
+		phil[i].starting_time = starting_time;
+		init_phil(&phil[i], i, av, &forks);
+	}
 	return ;
 }
 

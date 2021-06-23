@@ -1,12 +1,11 @@
 #include "philosophers.h"
 
-void	init_phil(int starting_time, t_phil *phil, int id, char**av, pthread_mutex_t **forks)
+void	init_phil(t_phil *phil, int id, char**av, pthread_mutex_t **forks)
 {
 	phil->nb_phil = ft_atoi_long(av[1]);
 	phil->time_to_die = ft_atoi_long(av[2]);
 	phil->time_to_eat = ft_atoi_long(av[3]);
 	phil->time_to_sleep = ft_atoi_long(av[4]);
-	phil->starting_time = starting_time;
 	phil->id = id;
 	phil->is_thinking = 0;
 	phil->has_taken_a_fork = 0;

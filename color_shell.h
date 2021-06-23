@@ -6,7 +6,7 @@
 /*   By: tharchen <tharchen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/11 09:59:44 by tharchen          #+#    #+#             */
-/*   Updated: 2021/06/23 08:18:36 by tsantoni         ###   ########.fr       */
+/*   Updated: 2021/06/23 08:51:20 by tsantoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,15 +37,8 @@
 # define C_G_WHITE		"\033[37;01m"
 # define C_G_GREY		"\033[90;01m"
 
-# define BLACK_B 		"\033[30;01m"
-# define RED_B 		"\033[31;01m"
-# define GREEN_B		"\033[32;01m"
-# define YELLOW_B		"\033[33;01m"
-# define BLUE_B		"\033[34;01m"
-# define MAGENTA_B	"\033[35;01m"
-# define CYAN_B		"\033[36;01m"
-# define WHITE_B		"\033[37;01m"
-# define GREY_B		"\033[90;01m"
+# define R_B 		"\033[31;01m"
+# define W_B		"\033[37;01m"
 /*
 ** color background
 */

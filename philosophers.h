@@ -59,7 +59,7 @@ typedef struct s_phil
 
 long	ft_atoi_long(char const *s);
 
-void	init_phil(int starting_time, t_phil *phil, int id, char**av,
+void	init_phil(t_phil *phil, int id, char**av,
 			pthread_mutex_t **forks);
 
 int		print_error(char *msg, t_phil *phil);

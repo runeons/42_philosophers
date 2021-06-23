@@ -29,9 +29,8 @@ void	print_rendu(t_phil *phil, int option)
 		printf("%8i %3i %s\n", phil->curr_time, phil->id, " is sleeping");
 }
 
-int	change_state_and_print(t_phil **phil, int new_state)
+int	change_state(t_phil **phil, int new_state)
 {
-	(*phil)->curr_time = ret_current_time(**phil);
 	if (new_state == THINKING)
 	{
 		(*phil)->is_thinking = 1;
@@ -54,6 +53,14 @@ int	change_state_and_print(t_phil **phil, int new_state)
 		(*phil)->is_eating = 0;
 		(*phil)->is_sleeping = 0;
 	}
+	return (0);
+}
+
+int	change_state_and_print(t_phil **phil, int new_state)
+{
+	(*phil)->curr_time = ret_current_time(**phil);
+	if (new_state == THINKING || new_state == EATING || new_state == SLEEPING)
+		change_state(phil, new_state);
 	else if (new_state == DIED)
 	{
 		(*phil)->is_thinking = 0;
