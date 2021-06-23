@@ -12,11 +12,13 @@ void	*routine(void *phil)
 			return (phil);
 		change_state_and_print(&curr, EATING);
 		millisleep(curr->time_to_eat, curr->curr_time, curr->starting_time);
+		if (curr->eating_times > 0)
+			curr->eating_times--;
 		pthread_mutex_unlock(curr->fork_left);
 		pthread_mutex_unlock(curr->fork_right);
 		change_state_and_print(&curr, SLEEPING);
 		millisleep(curr->time_to_sleep, curr->curr_time, curr->starting_time);
-		if (g_end)
+		if (g_end || curr->eating_times == 0)
 			return (phil);
 	}
 	return (phil);
