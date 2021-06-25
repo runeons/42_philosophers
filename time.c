@@ -19,7 +19,7 @@ void	millisleep(int to_spend, int current_time, int starting_time, int *end)
 	while (time_left > 0)
 	{
 		time_left = current_time + to_spend - (get_time() - starting_time);
-		usleep(50);
+		usleep(20);
 		if (*end)
 			return;
 		time_left = current_time + to_spend - (get_time() - starting_time);

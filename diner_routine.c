@@ -29,7 +29,6 @@ void	*routine(void *phil)
 			return (phil);
 		// thinks
 			change_state_and_print(&curr, THINKING);
-
 	}
 	return (phil);
 }
