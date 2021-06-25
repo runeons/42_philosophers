@@ -11,13 +11,13 @@ int	print_error(char *msg, t_phil *phil)
 
 void	print_rendu(t_phil *phil, int option)
 {
-	if (option == DIED && g_end == 0)
+	if (option == DIED && *phil->end == 0)
 	{
-		g_end = 1;
+		*phil->end = 1;
 		printf("%8i %3i %s\n", phil->curr_time, phil->id, " died");
-		millisleep(1, phil->curr_time, phil->starting_time);
+		millisleep(1, phil->curr_time, phil->starting_time, phil->end);
 	}
-	else if (g_end)
+	else if (*phil->end)
 		return ;
 	else if (option == THINKING)
 		printf("%8i %3i %s\n", phil->curr_time, phil->id, " is thinking");

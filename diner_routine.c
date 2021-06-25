@@ -16,7 +16,7 @@ void	*monitor(void *phil)
 			pthread_mutex_unlock(curr->fork_right);
 			return (phil);
 		}
-		if (g_end)
+		if (*curr->end)
 			return (phil);
 	}
 	return (phil);
@@ -41,7 +41,7 @@ void	*routine(void *phil)
 			return (phil);
 		// eats
 		change_state_and_print(&curr, EATING);
-		millisleep(curr->time_to_eat, curr->curr_time, curr->starting_time);
+		millisleep(curr->time_to_eat, curr->curr_time, curr->starting_time, curr->end);
 		if (curr->eating_times > 0)
 			curr->eating_times--;
 		// release forks
@@ -49,8 +49,8 @@ void	*routine(void *phil)
 		pthread_mutex_unlock(curr->fork_right);
 		// sleeps
 		change_state_and_print(&curr, SLEEPING);
-		millisleep(curr->time_to_sleep, curr->curr_time, curr->starting_time);
-		if (g_end || curr->eating_times == 0)
+		millisleep(curr->time_to_sleep, curr->curr_time, curr->starting_time, curr->end);
+		if (*curr->end || curr->eating_times == 0)
 			return (phil);
 	}
 	return (phil);
@@ -60,10 +60,13 @@ int	start_diner(t_phil *phils, int nb_phil)
 {
 	void	*phil;
 	int		i;
+	int		end;
 
+	end = 0;
 	i = -1;
 	while (++i < nb_phil)
 	{
+		phils[i].end = &end;
 		phil = (void *) &phils[i];
 		if (pthread_create(&(phils[i].th_phil), NULL, &routine, phil) != 0)
 			return (print_error("Failed to create thread", NULL));

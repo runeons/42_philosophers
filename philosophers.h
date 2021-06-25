@@ -51,6 +51,7 @@ typedef struct s_phil
 	int				last_eating;
 	pthread_t		th_phil;
 	pthread_t		th_monitor;
+	int				*end;
 }					t_phil;
 
 long	ft_atoi_long(char const *s);
@@ -63,7 +64,7 @@ void	print_rendu(t_phil *phil, int option);
 int		change_state_and_print(t_phil **phil, int new_state);
 
 int		get_time(void);
-void	millisleep(int to_spend, int curr_time, int starting_time);
+void	millisleep(int to_spend, int curr_time, int starting_time, int *end);
 int		ret_current_time(t_phil phil);
 
 int		take_fork(t_phil **phil, int option);

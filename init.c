@@ -20,4 +20,5 @@ void	init_phil(t_phil *phil, int id, char**av, pthread_mutex_t **forks)
 	phil->fork_right = &phil->forks[phil->id];
 	phil->curr_time = 0;
 	phil->last_eating = 0;
+	phil->end = NULL;
 }
