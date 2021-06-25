@@ -14,19 +14,19 @@ void	print_rendu(t_phil *phil, int option)
 	if (option == DIED && *phil->end == 0)
 	{
 		*phil->end = 1;
-		printf("%8i %3i %s\n", phil->curr_time, phil->id, " died");
+		printf("%06i %i %s\n", phil->curr_time, phil->id, "died");
 		millisleep(1, phil->curr_time, phil->starting_time, phil->end);
 	}
 	else if (*phil->end)
 		return ;
 	else if (option == THINKING)
-		printf("%8i %3i %s\n", phil->curr_time, phil->id, " is thinking");
+		printf("%06i %i %s\n", phil->curr_time, phil->id, "is thinking");
 	else if (option == TAKEN_A_FORK)
-		printf("%8i %3i %s\n", phil->curr_time, phil->id, " has taken a fork");
+		printf("%06i %i %s\n", phil->curr_time, phil->id, "has taken a fork");
 	else if (option == EATING)
-		printf("%8i %3i %s\n", phil->curr_time, phil->id, " is eating");
+		printf("%06i %i %s\n", phil->curr_time, phil->id, "is eating");
 	else if (option == SLEEPING)
-		printf("%8i %3i %s\n", phil->curr_time, phil->id, " is sleeping");
+		printf("%06i %i %s\n", phil->curr_time, phil->id, "is sleeping");
 }
 
 int	change_state_and_print(t_phil **phil, int new_state)
