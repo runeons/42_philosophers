@@ -9,8 +9,14 @@ int		end_checker(void)
 
 int		death_checker(t_phil *phil)
 {
-	if (phil->died == 1)
+	if (ret_current_time(*phil) - phil->last_eating > phil->time_to_die)
+	{
+		printf("%i DEAD\n", phil->id);
+		change_state_and_print(&phil, DIED);
+		pthread_mutex_unlock(phil->fork_left);
+		pthread_mutex_unlock(phil->fork_right);
 		return (1);
+	}
 	return (0);
 }
 
@@ -33,17 +39,23 @@ void	*routine(void *phil)
 	}
 	while (1)
 	{
+		// thinks
 		change_state_and_print(&curr, THINKING);
+		// take forks
 		if (take_forks(&curr, curr->nb_phil, curr->id) == -1)
 			return (phil);
+		// eats
 		change_state_and_print(&curr, EATING);
 		millisleep(curr->time_to_eat, curr->curr_time, curr->starting_time);
 		if (curr->eating_times > 0)
 			curr->eating_times--;
+		// release forks
 		pthread_mutex_unlock(curr->fork_left);
 		pthread_mutex_unlock(curr->fork_right);
+		// sleeps
 		change_state_and_print(&curr, SLEEPING);
 		millisleep(curr->time_to_sleep, curr->curr_time, curr->starting_time);
+		// if end, dies
 		if (g_end || curr->eating_times == 0)
 			return (phil);
 	}
@@ -61,6 +73,12 @@ int	start_diner(t_phil *phils, int nb_phil)
 		phil = (void *) &phils[i];
 		if (pthread_create(&(phils[i].th_phil), NULL, &routine, phil) != 0)
 			return (print_error("Failed to create thread", NULL));
+	}
+	i = -1;
+	while (++i < nb_phil)
+	{
+		if (death_checker(&phils[i]))
+			break ;
 	}
 	i = -1;
 	while (++i < nb_phil)
