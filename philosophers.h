@@ -9,7 +9,6 @@
 # include <unistd.h>
 # include "color_shell.h"
 
-extern int		g_end;
 pthread_mutex_t	g_lock_print;
 
 // none dies

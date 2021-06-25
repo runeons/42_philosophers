@@ -1,7 +1,5 @@
 #include "philosophers.h"
 
-int	g_end = 0;
-
 int	check_input(int ac, char **av)
 {
 	int	i;
