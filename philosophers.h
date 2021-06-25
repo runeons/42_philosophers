@@ -68,6 +68,7 @@ int		ret_current_time(t_phil phil);
 
 int		take_fork(t_phil **phil, int option);
 int		take_forks(t_phil **phil, int nb_phil, int id);
+int		take_forks_simple(t_phil **phil);
 int		fork_mutexes(int option, pthread_mutex_t *forks, int nb_phil);
 
 int		end_checker(void);

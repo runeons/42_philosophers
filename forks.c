@@ -23,22 +23,13 @@ int	take_fork(t_phil **phil, int option)
 
 int	take_forks(t_phil **phil, int nb_phil, int id)
 {
-	if (nb_phil % 2)
+	(void)nb_phil;
+	if (!(id % 2))
 	{
-		if (id % 2)
-		{
-			if (take_fork(phil, RIGHT) == -1)
-				return (-1);
-			if (take_fork(phil, LEFT) == -1)
-				return (-1);
-		}
-		else
-		{
-			if (take_fork(phil, LEFT) == -1)
-				return (-1);
-			if (take_fork(phil, RIGHT) == -1)
-				return (-1);
-		}
+		if (take_fork(phil, RIGHT) == -1)
+			return (-1);
+		if (take_fork(phil, LEFT) == -1)
+			return (-1);
 	}
 	else
 	{
@@ -47,6 +38,15 @@ int	take_forks(t_phil **phil, int nb_phil, int id)
 		if (take_fork(phil, RIGHT) == -1)
 			return (-1);
 	}
+	return (0);
+}
+
+int	take_forks_simple(t_phil **phil)
+{
+	if (take_fork(phil, RIGHT) == -1)
+		return (-1);
+	if (take_fork(phil, LEFT) == -1)
+		return (-1);
 	return (0);
 }
 
