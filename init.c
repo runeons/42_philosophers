@@ -7,10 +7,10 @@ void	init_phil(t_phil *phil, int id, char**av, pthread_mutex_t **forks)
 	phil->time_to_eat = ft_atoi_long(av[3]);
 	phil->time_to_sleep = ft_atoi_long(av[4]);
 	phil->id = id;
-	phil->is_thinking = 0;
-	phil->has_taken_a_fork = 0;
-	phil->is_eating = 0;
-	phil->is_sleeping = 0;
+	// phil->is_thinking = 0;
+	// phil->has_taken_a_fork = 0;
+	// phil->is_eating = 0;
+	// phil->is_sleeping = 0;
 	phil->died = 0;
 	phil->eating_times = -1;
 	if (av[5] && ft_atoi_long(av[5]) > 0)

@@ -29,51 +29,64 @@ void	print_rendu(t_phil *phil, int option)
 		printf("%8i %3i %s\n", phil->curr_time, phil->id, " is sleeping");
 }
 
-int	change_state(t_phil **phil, int new_state)
-{
-	if (new_state == THINKING)
-	{
-		(*phil)->is_thinking = 1;
-		if ((*phil)->is_eating == 1)
-			return (print_error("was not supposed to eat", (*phil)));
-		(*phil)->is_sleeping = 0;
-	}
-	else if (new_state == EATING)
-	{
-		(*phil)->last_eating = (*phil)->curr_time;
-		(*phil)->is_thinking = 0;
-		(*phil)->is_eating = 1;
-		if ((*phil)->is_sleeping == 1)
-			return (print_error("was not supposed to sleep", (*phil)));
-	}
-	else if (new_state == SLEEPING)
-	{
-		if ((*phil)->is_thinking == 1)
-			return (print_error("was not supposed to think", (*phil)));
-		(*phil)->is_eating = 0;
-		(*phil)->is_sleeping = 0;
-	}
-	return (0);
-}
-
 int	change_state_and_print(t_phil **phil, int new_state)
 {
 	(*phil)->curr_time = ret_current_time(**phil);
-	if (new_state == THINKING || new_state == EATING || new_state == SLEEPING)
-		change_state(phil, new_state);
+	if (new_state == EATING)
+		(*phil)->last_eating = (*phil)->curr_time;
 	else if (new_state == DIED)
-	{
-		(*phil)->is_thinking = 0;
-		(*phil)->is_eating = 0;
-		(*phil)->is_sleeping = 0;
 		(*phil)->died = 1;
-	}
-	else if (new_state == TAKEN_A_FORK)
-		;
-	else
-		return (print_error("undefined new_state", (*phil)));
 	pthread_mutex_lock(&g_lock_print);
 	print_rendu((*phil), new_state);
 	pthread_mutex_unlock(&g_lock_print);
 	return (0);
 }
+
+// int	change_state(t_phil **phil, int new_state)
+// {
+// 	if (new_state == THINKING)
+// 	{
+// 		(*phil)->is_thinking = 1;
+// 		if ((*phil)->is_eating == 1)
+// 			return (print_error("was not supposed to eat", (*phil)));
+// 		(*phil)->is_sleeping = 0;
+// 	}
+// 	else if (new_state == EATING)
+// 	{
+// 		(*phil)->last_eating = (*phil)->curr_time;
+// 		(*phil)->is_thinking = 0;
+// 		(*phil)->is_eating = 1;
+// 		if ((*phil)->is_sleeping == 1)
+// 			return (print_error("was not supposed to sleep", (*phil)));
+// 	}
+// 	else if (new_state == SLEEPING)
+// 	{
+// 		if ((*phil)->is_thinking == 1)
+// 			return (print_error("was not supposed to think", (*phil)));
+// 		(*phil)->is_eating = 0;
+// 		(*phil)->is_sleeping = 0;
+// 	}
+// 	return (0);
+// }
+//
+// int	change_state_and_print(t_phil **phil, int new_state)
+// {
+// 	(*phil)->curr_time = ret_current_time(**phil);
+// 	if (new_state == THINKING || new_state == EATING || new_state == SLEEPING)
+// 		change_state(phil, new_state);
+// 	else if (new_state == DIED)
+// 	{
+// 		(*phil)->is_thinking = 0;
+// 		(*phil)->is_eating = 0;
+// 		(*phil)->is_sleeping = 0;
+// 		(*phil)->died = 1;
+// 	}
+// 	else if (new_state == TAKEN_A_FORK)
+// 		;
+// 	else
+// 		return (print_error("undefined new_state", (*phil)));
+// 	pthread_mutex_lock(&g_lock_print);
+// 	print_rendu((*phil), new_state);
+// 	pthread_mutex_unlock(&g_lock_print);
+// 	return (0);
+// }
