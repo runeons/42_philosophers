@@ -1,24 +1,5 @@
 #include "philosophers.h"
 
-int		end_checker(void)
-{
-	if (g_end == 1)
-		return (1);
-	return (0);
-}
-
-int		death_checker(t_phil *phil)
-{
-	if (ret_current_time(*phil) - phil->last_eating > phil->time_to_die)
-	{
-		change_state_and_print(&phil, DIED);
-		pthread_mutex_unlock(phil->fork_left);
-		pthread_mutex_unlock(phil->fork_right);
-		return (1);
-	}
-	return (0);
-}
-
 void	*monitor(void *phil)
 {
 	t_phil	*curr;
@@ -28,10 +9,15 @@ void	*monitor(void *phil)
 	{
 		if (curr->eating_times == 0)
 			return (phil);
-		if (death_checker(curr))
+		if (ret_current_time(*curr) - curr->last_eating > curr->time_to_die)
+		{
+			change_state_and_print(&curr, DIED);
+			pthread_mutex_unlock(curr->fork_left);
+			pthread_mutex_unlock(curr->fork_right);
 			return (phil);
-		// if (end_checker())
-			// return (phil);
+		}
+		if (g_end)
+			return (phil);
 	}
 	return (phil);
 }
@@ -64,7 +50,6 @@ void	*routine(void *phil)
 		// sleeps
 		change_state_and_print(&curr, SLEEPING);
 		millisleep(curr->time_to_sleep, curr->curr_time, curr->starting_time);
-		// if end, dies
 		if (g_end || curr->eating_times == 0)
 			return (phil);
 	}
@@ -85,12 +70,6 @@ int	start_diner(t_phil *phils, int nb_phil)
 		if (pthread_create(&(phils[i].th_monitor), NULL, &monitor, phil) != 0)
 			return (print_error("Failed to create thread", NULL));
 	}
-	// i = -1;
-	// while (++i < nb_phil)
-	// {
-	// 	if (death_checker(&phils[i]))
-	// 		break ;
-	// }
 	i = -1;
 	while (++i < nb_phil)
 	{

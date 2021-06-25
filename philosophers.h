@@ -41,10 +41,6 @@ typedef struct s_phil
 	int				starting_time;
 	int				id;
 	int				eating_times;
-	// int				is_thinking;
-	// int				has_taken_a_fork;
-	// int				is_eating;
-	// int				is_sleeping;
 	int				died;
 	int				left;
 	int				right;
