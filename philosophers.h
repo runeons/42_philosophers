@@ -74,6 +74,10 @@ int		take_fork(t_phil **phil, int option);
 int		take_forks(t_phil **phil, int nb_phil, int id);
 int		fork_mutexes(int option, pthread_mutex_t *forks, int nb_phil);
 
+int		end_checker(void);
+int		meal_checker(t_phil *phil);
+int		death_checker(t_phil *phil);
+
 void	*routine(void *phil);
 int		start_diner(t_phil *phils, int nb_phil);
 

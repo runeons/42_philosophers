@@ -1,5 +1,26 @@
 #include "philosophers.h"
 
+int		end_checker(void)
+{
+	if (g_end == 1)
+		return (1);
+	return (0);
+}
+
+int		death_checker(t_phil *phil)
+{
+	if (phil->died == 1)
+		return (1);
+	return (0);
+}
+
+int		meal_checker(t_phil *phil)
+{
+	if (phil->eating_times == 0)
+		return (1);
+	return (0);
+}
+
 void	*routine(void *phil)
 {
 	t_phil	*curr;
