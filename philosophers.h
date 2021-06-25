@@ -54,7 +54,7 @@ typedef struct s_phil
 	int				curr_time;
 	int				last_eating;
 	pthread_t		th_phil;
-
+	pthread_t		th_monitor;
 }					t_phil;
 
 long	ft_atoi_long(char const *s);

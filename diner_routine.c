@@ -11,7 +11,6 @@ int		death_checker(t_phil *phil)
 {
 	if (ret_current_time(*phil) - phil->last_eating > phil->time_to_die)
 	{
-		printf("%i DEAD\n", phil->id);
 		change_state_and_print(&phil, DIED);
 		pthread_mutex_unlock(phil->fork_left);
 		pthread_mutex_unlock(phil->fork_right);
@@ -20,11 +19,21 @@ int		death_checker(t_phil *phil)
 	return (0);
 }
 
-int		meal_checker(t_phil *phil)
+void	*monitor(void *phil)
 {
-	if (phil->eating_times == 0)
-		return (1);
-	return (0);
+	t_phil	*curr;
+
+	curr = ((t_phil *)phil);
+	while (1)
+	{
+		if (curr->eating_times == 0)
+			return (phil);
+		if (death_checker(curr))
+			return (phil);
+		// if (end_checker())
+			// return (phil);
+	}
+	return (phil);
 }
 
 void	*routine(void *phil)
@@ -73,18 +82,22 @@ int	start_diner(t_phil *phils, int nb_phil)
 		phil = (void *) &phils[i];
 		if (pthread_create(&(phils[i].th_phil), NULL, &routine, phil) != 0)
 			return (print_error("Failed to create thread", NULL));
+		if (pthread_create(&(phils[i].th_monitor), NULL, &monitor, phil) != 0)
+			return (print_error("Failed to create thread", NULL));
 	}
-	i = -1;
-	while (++i < nb_phil)
-	{
-		if (death_checker(&phils[i]))
-			break ;
-	}
+	// i = -1;
+	// while (++i < nb_phil)
+	// {
+	// 	if (death_checker(&phils[i]))
+	// 		break ;
+	// }
 	i = -1;
 	while (++i < nb_phil)
 	{
 		phil = (void **) &phils[i];
 		if (pthread_join(phils[i].th_phil, phil) != 0)
+			return (print_error("Failed to join thread", NULL));
+		if (pthread_join(phils[i].th_monitor, phil) != 0)
 			return (print_error("Failed to join thread", NULL));
 	}
 	return (0);
