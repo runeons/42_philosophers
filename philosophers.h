@@ -66,16 +66,11 @@ int		get_time(void);
 void	millisleep(int to_spend, int curr_time, int starting_time, int *end);
 int		ret_current_time(t_phil phil);
 
-int		take_fork(t_phil **phil, int option);
-int		take_forks(t_phil **phil, int nb_phil, int id);
-int		take_forks_simple(t_phil **phil);
 int		fork_mutexes(int option, pthread_mutex_t *forks, int nb_phil);
 
-int		end_checker(void);
-int		meal_checker(t_phil *phil);
 int		death_checker(t_phil *phil);
 
-void	*routine(void *phil);
+// void	*routine(void *phil);
 int		start_diner(t_phil *phils, int nb_phil);
 
 #endif

@@ -14,6 +14,24 @@ int	check_death(t_phil **phil)
 	return (0);
 }
 
+int	eats(t_phil *curr)
+{
+	if (check_death(&curr))
+		return (1);
+	pthread_mutex_lock(curr->fork_right);
+	pthread_mutex_lock(curr->fork_left);
+	change_state_and_print(&curr, TAKEN_A_FORK);
+	pthread_mutex_lock(&curr->die_and_eat);
+	change_state_and_print(&curr, EATING);
+	pthread_mutex_unlock(&curr->die_and_eat);
+	millisleep(curr->time_to_eat, curr->curr_time, curr->starting_time, curr->end);
+	if (curr->eating_times > 0)
+		curr->eating_times--;
+	pthread_mutex_unlock(curr->fork_left);
+	pthread_mutex_unlock(curr->fork_right);
+	return (0);
+}
+
 void	*routine(void *phil)
 {
 	t_phil	*curr;
@@ -24,29 +42,13 @@ void	*routine(void *phil)
 	pthread_mutex_init(&curr->die_and_eat, NULL);
 	while (1)
 	{
-		// take forks
-		if (check_death(&curr))
+		if (eats(curr))
 			break ;
-		pthread_mutex_lock(curr->fork_right);
-		pthread_mutex_lock(curr->fork_left);
-		change_state_and_print(&curr, TAKEN_A_FORK);
-		// eats
-		pthread_mutex_lock(&curr->die_and_eat);
-		change_state_and_print(&curr, EATING);
-		pthread_mutex_unlock(&curr->die_and_eat);
-		millisleep(curr->time_to_eat, curr->curr_time, curr->starting_time, curr->end);
-		if (curr->eating_times > 0)
-			curr->eating_times--;
-		// release forks
-		pthread_mutex_unlock(curr->fork_left);
-		pthread_mutex_unlock(curr->fork_right);
-		// sleeps
 		change_state_and_print(&curr, SLEEPING);
 		millisleep(curr->time_to_sleep, curr->curr_time, curr->starting_time, curr->end);
 		if (*curr->end || curr->eating_times == 0)
 			return (phil);
-		// thinks
-			change_state_and_print(&curr, THINKING);
+		change_state_and_print(&curr, THINKING);
 	}
 	pthread_mutex_destroy(&curr->die_and_eat);
 	return (phil);
@@ -69,27 +71,27 @@ void	*monitor(void *phil)
 	return (phil);
 }
 
-int		monitor_main(t_phil *phil)
-{
-	t_phil	*curr;
-
-	curr = ((t_phil *)phil);
-	while (1)
-	{
-		if (curr->eating_times == 0)
-			return (1);
-		if (ret_current_time(*curr) - curr->last_eating > curr->time_to_die)
-		{
-			change_state_and_print(&curr, DIED);
-			pthread_mutex_unlock(curr->fork_left);
-			pthread_mutex_unlock(curr->fork_right);
-			return (1);
-		}
-		if (*curr->end)
-			return (1);
-	}
-	return (0);
-}
+// int		monitor_main(t_phil *phil)
+// {
+// 	t_phil	*curr;
+//
+// 	curr = ((t_phil *)phil);
+// 	while (1)
+// 	{
+// 		if (curr->eating_times == 0)
+// 			return (1);
+// 		if (ret_current_time(*curr) - curr->last_eating > curr->time_to_die)
+// 		{
+// 			change_state_and_print(&curr, DIED);
+// 			pthread_mutex_unlock(curr->fork_left);
+// 			pthread_mutex_unlock(curr->fork_right);
+// 			return (1);
+// 		}
+// 		if (*curr->end)
+// 			return (1);
+// 	}
+// 	return (0);
+// }
 
 int	start_diner(t_phil *phils, int nb_phil)
 {
