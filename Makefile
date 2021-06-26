@@ -1,4 +1,4 @@
-NAME 		= 	philosophers
+NAME 		= 	philo
 
 CC 			= 	clang
 CFLAGS 		= 	-Wall -Wextra -Werror -g3 -lpthread

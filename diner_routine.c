@@ -1,5 +1,16 @@
 #include "philosophers.h"
 
+int	check_death(t_phil **phil)
+{
+	if (ret_current_time(**phil) - (*phil)->last_eating > (*phil)->time_to_die)
+	{
+		change_state_and_print(phil, DIED);
+		pthread_mutex_unlock((*phil)->fork_left);
+		pthread_mutex_unlock((*phil)->fork_right);
+		return (1);
+	}
+	return (0);
+}
 
 void	*routine(void *phil)
 {
@@ -11,9 +22,13 @@ void	*routine(void *phil)
 	while (1)
 	{
 		// take forks
-		// if (take_forks(&curr, curr->nb_phil, curr->id) == -1)
-		if (take_forks_simple(&curr) == -1)
-			return (phil);
+		if (check_death(&curr))
+			break ;
+		pthread_mutex_lock(curr->fork_right);
+		pthread_mutex_lock(curr->fork_left);
+		change_state_and_print(&curr, TAKEN_A_FORK);
+		// if (take_forks_simple(&curr) == -1)
+			// return (phil);
 		// eats
 		change_state_and_print(&curr, EATING);
 		millisleep(curr->time_to_eat, curr->curr_time, curr->starting_time, curr->end);
@@ -41,16 +56,11 @@ void	*monitor(void *phil)
 	while (1)
 	{
 		if (curr->eating_times == 0)
-			return (phil);
-		if (ret_current_time(*curr) - curr->last_eating > curr->time_to_die)
-		{
-			change_state_and_print(&curr, DIED);
-			pthread_mutex_unlock(curr->fork_left);
-			pthread_mutex_unlock(curr->fork_right);
-			return (phil);
-		}
+			break ;
+		if (check_death(&curr))
+			break ;
 		if (*curr->end)
-			return (phil);
+			break ;
 	}
 	return (phil);
 }
