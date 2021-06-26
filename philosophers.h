@@ -46,6 +46,7 @@ typedef struct s_phil
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	*fork_left;
 	pthread_mutex_t	*fork_right;
+	pthread_mutex_t	die_and_eat;
 	int				curr_time;
 	int				last_eating;
 	pthread_t		th_phil;

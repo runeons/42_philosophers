@@ -4,7 +4,9 @@ int	check_death(t_phil **phil)
 {
 	if (ret_current_time(**phil) - (*phil)->last_eating > (*phil)->time_to_die)
 	{
+		pthread_mutex_lock(&(*phil)->die_and_eat);
 		change_state_and_print(phil, DIED);
+		pthread_mutex_unlock(&(*phil)->die_and_eat);
 		pthread_mutex_unlock((*phil)->fork_left);
 		pthread_mutex_unlock((*phil)->fork_right);
 		return (1);
@@ -27,10 +29,10 @@ void	*routine(void *phil)
 		pthread_mutex_lock(curr->fork_right);
 		pthread_mutex_lock(curr->fork_left);
 		change_state_and_print(&curr, TAKEN_A_FORK);
-		// if (take_forks_simple(&curr) == -1)
-			// return (phil);
 		// eats
+		pthread_mutex_lock(&curr->die_and_eat);
 		change_state_and_print(&curr, EATING);
+		pthread_mutex_unlock(&curr->die_and_eat);
 		millisleep(curr->time_to_eat, curr->curr_time, curr->starting_time, curr->end);
 		if (curr->eating_times > 0)
 			curr->eating_times--;
@@ -45,6 +47,8 @@ void	*routine(void *phil)
 		// thinks
 			change_state_and_print(&curr, THINKING);
 	}
+	pthread_mutex_destroy(&curr->die_and_eat);
+	
 	return (phil);
 }
 
@@ -107,8 +111,12 @@ int	start_diner(t_phil *phils, int nb_phil)
 	// i = -1;
 	// while (++i < nb_phil)
 	// {
+	// 	printf("monitoring %i : %i\n", i, ret_current_time(phils[i]));
 	// 	if (monitor_main(&phil[i]))
+	// 	{
+	// 		printf("%i : %i\n", i, ret_current_time(phils[i]));
 	// 		break;
+	// 	}
 	// }
 	i = -1;
 	while (++i < nb_phil)
