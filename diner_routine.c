@@ -21,6 +21,7 @@ void	*routine(void *phil)
 	curr = ((t_phil *)phil);
 	if (curr->id % 2)
 		usleep(900);
+	pthread_mutex_init(&curr->die_and_eat, NULL);
 	while (1)
 	{
 		// take forks
@@ -48,7 +49,6 @@ void	*routine(void *phil)
 			change_state_and_print(&curr, THINKING);
 	}
 	pthread_mutex_destroy(&curr->die_and_eat);
-	
 	return (phil);
 }
 
@@ -96,12 +96,15 @@ int	start_diner(t_phil *phils, int nb_phil)
 	void	*phil;
 	int		i;
 	int		end;
+	pthread_mutex_t	lock_print;
 
 	end = 0;
 	i = -1;
+	pthread_mutex_init(&lock_print, NULL);
 	while (++i < nb_phil)
 	{
 		phils[i].end = &end;
+		phils[i].lock_print = &lock_print;
 		phil = (void *) &phils[i];
 		if (pthread_create(&(phils[i].th_phil), NULL, &routine, phil) != 0)
 			return (print_error("Failed to create thread", NULL));
@@ -127,5 +130,6 @@ int	start_diner(t_phil *phils, int nb_phil)
 		if (pthread_join(phils[i].th_monitor, phil) != 0)
 			return (print_error("Failed to join thread", NULL));
 	}
+	pthread_mutex_destroy(&lock_print);
 	return (0);
 }

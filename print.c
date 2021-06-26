@@ -36,8 +36,8 @@ int	change_state_and_print(t_phil **phil, int new_state)
 		(*phil)->last_eating = (*phil)->curr_time;
 	else if (new_state == DIED)
 		(*phil)->died = 1;
-	pthread_mutex_lock(&g_lock_print);
+	pthread_mutex_lock((*phil)->lock_print);
 	print_rendu((*phil), new_state);
-	pthread_mutex_unlock(&g_lock_print);
+	pthread_mutex_unlock((*phil)->lock_print);
 	return (0);
 }

@@ -50,13 +50,11 @@ int	main(int ac, char **av)
 	nb_phil = ft_atoi_long(av[1]);
 	phil = (t_phil *)malloc(sizeof(t_phil) * (nb_phil + 1));
 	forks = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t) * (nb_phil + 1));
-	pthread_mutex_init(&g_lock_print, NULL);
 	init_phils(phil, av, forks);
 	if (fork_mutexes(INIT, forks, nb_phil))
 		return (-1);
 	if (start_diner(phil, nb_phil))
 		return (-1);
-	pthread_mutex_destroy(&g_lock_print);
 	if (fork_mutexes(DESTROY, forks, nb_phil))
 		return (-1);
 	free(phil);

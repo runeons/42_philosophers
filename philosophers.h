@@ -9,8 +9,6 @@
 # include <unistd.h>
 # include "color_shell.h"
 
-pthread_mutex_t	g_lock_print;
-
 // none dies
 // 4 410 200 200
 // 5 800 200 200
@@ -47,6 +45,7 @@ typedef struct s_phil
 	pthread_mutex_t	*fork_left;
 	pthread_mutex_t	*fork_right;
 	pthread_mutex_t	die_and_eat;
+	pthread_mutex_t	*lock_print;
 	int				curr_time;
 	int				last_eating;
 	pthread_t		th_phil;

@@ -21,5 +21,5 @@ void	init_phil(t_phil *phil, int id, char**av, pthread_mutex_t **forks)
 	phil->curr_time = 0;
 	phil->last_eating = 0;
 	phil->end = NULL;
-	pthread_mutex_init(&phil->die_and_eat, NULL);
+	// pthread_mutex_init(&phil->die_and_eat, NULL);
 }
