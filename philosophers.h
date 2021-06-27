@@ -49,7 +49,7 @@ typedef struct s_phil
 	int				curr_time;
 	int				last_eating;
 	pthread_t		th_phil;
-	pthread_t		th_monitor;
+	// pthread_t		th_monitor;
 	int				*end;
 }					t_phil;
 
