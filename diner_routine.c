@@ -59,34 +59,24 @@ void	*routine(void *phil)
 void	*monitor(void *phil)
 {
 	t_phil	*curr;
+	int		i;
 
 	curr = ((t_phil *)phil);
 	while (1)
 	{
-		if (curr->eating_times == 0)
-			break ;
-		if (check_death(&curr))
-			break ;
-		if (*curr->end)
-			break ;
+		i = -1;
+		while (++i < curr->nb_phil)
+		{
+			if (curr->eating_times == 0)
+				return (phil);
+			if (check_death(&curr))
+				return (phil);
+			if (*curr->end)
+				return (phil);
+		}
+		// usleep(100);
 	}
 	return (phil);
-}
-
-int	phil_join_threads(t_phil *phils, int nb_phil, void *phil)
-{
-	int	i;
-
-	i = -1;
-	while (++i < nb_phil)
-	{
-		phil = (void **) &phils[i];
-		if (pthread_join(phils[i].th_phil, phil) != 0)
-			return (print_error("Failed to join thread", NULL));
-		if (pthread_join(phils[i].th_monitor, phil) != 0)
-			return (print_error("Failed to join thread", NULL));
-	}
-	return (1);
 }
 
 int	start_diner(t_phil *phils, int nb_phil)
@@ -112,7 +102,12 @@ int	start_diner(t_phil *phils, int nb_phil)
 	pthread_join(th_monitor, NULL);
 	i = -1;
 	while (++i < nb_phil)
+	{
+		// phil = (void **) &phils[i];
+		// if (pthread_join(phils[i].th_phil, phil) != 0)
+			// return (print_error("Failed to join thread", NULL));
 		pthread_join(phils[i].th_phil, NULL);
+	}
 	pthread_mutex_destroy(&lock_print);
 	return (0);
 }
