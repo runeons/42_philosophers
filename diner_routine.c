@@ -48,7 +48,7 @@ void	*routine(void *phil)
 		millisleep(curr->time_to_sleep, curr->curr_time,
 			curr->starting_time, curr->end);
 		if (*curr->end || curr->eating_times == 0)
-			return (phil);
+			break ;
 		change_state_and_print(&curr, THINKING);
 	}
 	pthread_mutex_destroy(&curr->die_and_eat);
@@ -109,7 +109,7 @@ int	start_diner(t_phil *phils, int nb_phil)
 		// if (pthread_create(&(phils[i].th_monitor), NULL, &monitor, phil) != 0)
 			// return (print_error("Failed to create thread", NULL));
 	}
-	pthread_create(&th_monitor, NULL, &monitor, phil);
+	pthread_create(&th_monitor, NULL, &monitor, phils);
 	pthread_join(th_monitor, NULL);
 	i = -1;
 	while (++i < nb_phil)
