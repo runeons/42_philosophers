@@ -1,7 +1,7 @@
 NAME 		= 	philo
 
 CC 			= 	clang
-CFLAGS 		= 	-Wall -Wextra -Werror -g3 -lpthread
+CFLAGS 		= 	-Wall -Wextra -Werror -lpthread
 SRCS		=	main.c \
 				diner_routine.c \
 				init.c \
