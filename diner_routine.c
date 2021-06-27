@@ -40,7 +40,6 @@ void	*routine(void *phil)
 	curr = ((t_phil *)phil);
 	if (curr->id % 2)
 		usleep(900);
-	pthread_mutex_init(&curr->die_and_eat, NULL);
 	while (1)
 	{
 		if (eats(curr))
@@ -95,6 +94,7 @@ int	start_diner(t_phil *phils, int nb_phil)
 	int				i;
 	int				end;
 	pthread_mutex_t	lock_print;
+	pthread_t		th_monitor;
 
 	end = 0;
 	i = -1;
@@ -106,10 +106,27 @@ int	start_diner(t_phil *phils, int nb_phil)
 		phil = (void *) &phils[i];
 		if (pthread_create(&(phils[i].th_phil), NULL, &routine, phil) != 0)
 			return (print_error("Failed to create thread", NULL));
-		if (pthread_create(&(phils[i].th_monitor), NULL, &monitor, phil) != 0)
-			return (print_error("Failed to create thread", NULL));
+		// if (pthread_create(&(phils[i].th_monitor), NULL, &monitor, phil) != 0)
+			// return (print_error("Failed to create thread", NULL));
 	}
-	phil_join_threads(phils, nb_phil, phil);
+	pthread_create(&th_monitor, NULL, &monitor, phil);
+	pthread_join(th_monitor, NULL);
+	i = -1;
+	while (++i < nb_phil)
+		pthread_join(phils[i].th_phil, NULL);
+		// pthread_detach(phils[i].th_phil);
+
+	// i = -1;
+	// while (++i < nb_phil)
+	// {
+	// 	phil = (void **) &phils[i];
+	// 	if (pthread_join(phils[i].th_phil, phil) != 0)
+	// 		return (print_error("Failed to join thread", NULL));
+	// 	if (pthread_join(phils[i].th_monitor, phil) != 0)
+	// 		return (print_error("Failed to join thread", NULL));
+	// }
+
+	// phil_join_threads(phils, nb_phil, phil);
 	pthread_mutex_destroy(&lock_print);
 	return (0);
 }
