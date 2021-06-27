@@ -9,14 +9,6 @@
 # include <unistd.h>
 # include "color_shell.h"
 
-// none dies
-// 4 410 200 200
-// 5 800 200 200
-
-// one dies
-// 4 310 200 100
-// 5 310 200 200 4
-
 # define THINKING 0
 # define TAKEN_A_FORK 1
 # define EATING 2
@@ -49,7 +41,6 @@ typedef struct s_phil
 	int				curr_time;
 	int				last_eating;
 	pthread_t		th_phil;
-	// pthread_t		th_monitor;
 	int				*end;
 }					t_phil;
 

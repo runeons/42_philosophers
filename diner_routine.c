@@ -74,7 +74,6 @@ void	*monitor(void *phils)
 			if (*curr[i].end)
 				return (phils);
 		}
-		// usleep(100);
 	}
 	return (phils);
 }
@@ -102,12 +101,7 @@ int	start_diner(t_phil *phils, int nb_phil)
 	pthread_join(th_monitor, NULL);
 	i = -1;
 	while (++i < nb_phil)
-	{
-		// phil = (void **) &phils[i];
-		// if (pthread_join(phils[i].th_phil, phil) != 0)
-			// return (print_error("Failed to join thread", NULL));
 		pthread_join(phils[i].th_phil, NULL);
-	}
 	pthread_mutex_destroy(&lock_print);
 	return (0);
 }
