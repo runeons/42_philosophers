@@ -18,9 +18,6 @@
 # define INIT 0
 # define DESTROY 1
 
-# define LEFT 0
-# define RIGHT 1
-
 typedef struct s_phil
 {
 	int				nb_phil;
@@ -48,6 +45,7 @@ long	ft_atoi_long(char const *s);
 
 void	init_phil(t_phil *phil, int id, char**av,
 			pthread_mutex_t **forks);
+int		fork_mutexes(int option, pthread_mutex_t *forks, int nb_phil);
 
 int		print_error(char *msg, t_phil *phil);
 void	print_rendu(t_phil *phil, int option);
@@ -57,11 +55,6 @@ int		get_time(void);
 void	millisleep(int to_spend, int curr_time, int starting_time, int *end);
 int		ret_current_time(t_phil phil);
 
-int		fork_mutexes(int option, pthread_mutex_t *forks, int nb_phil);
-
-int		death_checker(t_phil *phil);
-
-// void	*routine(void *phil);
 int		start_diner(t_phil *phils, int nb_phil);
 
 #endif
