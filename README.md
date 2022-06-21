@@ -19,7 +19,7 @@ This is a 42 project whose aim it to simulate the famous dining philosophers pro
 - Global variables forbidden
 #### Usage
     make && ./philo NB_PHIL TIME_BEFORE_DYING TIME_TO_EAT TIME_TO_SLEEP [NB_MEALS_BEFORE_END]
-
+    
     make && ./philo 4 400 200 100 [3]  
 #### Example
     ./philo 4 300 200 100
