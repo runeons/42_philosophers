@@ -26,7 +26,4 @@ fclean: clean
 
 re: fclean all
 
-fsan: $(SRCS)
-	$(CPL) $(FLAGS) $(INCLUDES) $(SRCS) -fsanitize=address -g3 -o $(NAME)
-
 .PHONY: all clean fclean re
